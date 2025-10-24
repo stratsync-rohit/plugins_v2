@@ -55,8 +55,8 @@ export default function App() {
           style={{
             width: 24,
             height: 24,
-            objectFit: "contain",
-            cursor: "pointer",
+            objectFit: "contain"
+            
           }}
         />
         StratSync ChatBot
