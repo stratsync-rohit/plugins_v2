@@ -54,7 +54,7 @@ export default function App() {
           alt="StratSync Logo"
           style={{
             width: 24,
-            height: 24,
+            height: 22,
             objectFit: "contain",
             cursor: "pointer",
             
