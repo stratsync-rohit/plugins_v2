@@ -1,15 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
 
 const TARGET_URL = "https://demo.stratsync.ai";
-const LOAD_TIMEOUT_MS = 5000; // agar 5s me nahi load hua toh fallback show kar
-
+const LOAD_TIMEOUT_MS = 5000; 
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const timerRef = useRef(null);
 
   useEffect(() => {
-    // set a timeout to assume iframe blocked (X-Frame-Options) or never loads
+   
     timerRef.current = setTimeout(() => {
       if (loading) {
         setFailed(true);
@@ -22,7 +21,6 @@ export default function App() {
     };
   }, [loading]);
 
-  // iframe onLoad handler
   const handleLoad = () => {
     clearTimeout(timerRef.current);
     setLoading(false);
@@ -31,9 +29,32 @@ export default function App() {
 
   return (
     <div style={{ width: "400px", height: "600px", display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: 8, borderBottom: "1px solid #eee", fontWeight: 600 }}>
-        Demo StratSync
-      </div>
+     <div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    padding: 8,
+    background: "#f6f4f4ff",
+    borderBottom: "1px solid #eee",
+    fontSize: 16,
+    fontWeight: 600,
+    color: "#000",
+  }}
+>
+  <img
+    src="logo_.png" 
+    alt="StratSync Logo"
+    style={{
+      width: 24,
+      height: 24,
+      objectFit: "contain",
+    }}
+  />
+  StratSync ChatBot
+</div>
+
 
       <div style={{ flex: 1, position: "relative" }}>
         {loading && !failed && (

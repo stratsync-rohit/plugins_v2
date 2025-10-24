@@ -1,12 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "Hello Rohit Extension",
+  "name": "StratSync Demo Plugin",
   "version": "1.0",
-  "description": "Displays 'Hello Rohit' using React",
+  "description": "An AI chatbot by StratSync powered by RAG for accurate, context-aware responses.",
+
   "action": {
     "default_popup": "dist/index.html"
   },
   "icons": {
-    "48": "dist/vite.svg"
+    "48": "dist/logo_.png"
   }
 }
