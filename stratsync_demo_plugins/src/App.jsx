@@ -1,14 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 
 const TARGET_URL = "https://demo.stratsync.ai";
-const LOAD_TIMEOUT_MS = 5000; 
+const LOAD_TIMEOUT_MS = 5000;
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const timerRef = useRef(null);
 
   useEffect(() => {
-   
     timerRef.current = setTimeout(() => {
       if (loading) {
         setFailed(true);
@@ -28,40 +27,52 @@ export default function App() {
   };
 
   return (
-    <div style={{ width: "400px", height: "600px", display: "flex", flexDirection: "column" }}>
-     <div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    padding: 8,
-    background: "#f6f4f4ff",
-    borderBottom: "1px solid #eee",
-    fontSize: 16,
-    fontWeight: 600,
-    color: "#000",
-  }}
->
-  <img
-    src="logo_.png" 
-    alt="StratSync Logo"
-    style={{
-      width: 24,
-      height: 24,
-      objectFit: "contain",
-    }}
-  />
-  StratSync ChatBot
-</div>
-
+    <div
+      style={{
+        width: "400px",
+        height: "600px",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 8,
+          padding: 8,
+          background: "#f6f4f4ff",
+          borderBottom: "1px solid #eee",
+          fontSize: 16,
+          fontWeight: 600,
+          color: "#000",
+        }}
+      >
+        <img
+          src="logo_.png"
+          alt="StratSync Logo"
+          style={{
+            width: 24,
+            height: 24,
+            objectFit: "contain",
+          }}
+        />
+        StratSync ChatBot
+      </div>
 
       <div style={{ flex: 1, position: "relative" }}>
         {loading && !failed && (
-          <div style={{
-            position: "absolute", inset: 0, display: "flex",
-            justifyContent: "center", alignItems: "center", background: "#fff"
-          }}>
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              background: "#fff",
+            }}
+          >
             <div>
               <div style={{ fontSize: 14, marginBottom: 6 }}>Loading...</div>
             </div>
@@ -86,7 +97,9 @@ export default function App() {
             </p>
             <div style={{ marginTop: 8 }}>
               <button
-                onClick={() => window.open(TARGET_URL, "_blank", "noopener,noreferrer")}
+                onClick={() =>
+                  window.open(TARGET_URL, "_blank", "noopener,noreferrer")
+                }
                 style={{ padding: "8px 12px", cursor: "pointer" }}
               >
                 Open in new tab

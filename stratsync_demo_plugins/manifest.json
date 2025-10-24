@@ -8,6 +8,6 @@
     "default_popup": "dist/index.html"
   },
   "icons": {
-    "48": "dist/logo_.png"
+    "48": "dist/logo.jpeg"
   }
 }
