@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Rohit Choukiker",
+  "version": "1.0",
+  "description": "StratSync Demo Plugin",
+  "action": {
+  "default_popup": "index.html",
+  "default_title": "Open Demo StratSync"
+},
+  "icons": {
+    "48": "vite.svg"
+  }
+}
