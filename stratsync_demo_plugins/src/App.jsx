@@ -29,10 +29,14 @@ export default function App() {
   return (
     <div
       style={{
-        width: "400px",
+        width: "500px",
         height: "600px",
         display: "flex",
         flexDirection: "column",
+
+        borderRadius: 8,
+        overflow: "hidden",
+        fontFamily: "Arial, sans-serif",
       }}
     >
       <div

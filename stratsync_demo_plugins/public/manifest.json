@@ -3,10 +3,14 @@
   "name": "Rohit Choukiker",
   "version": "1.0",
   "description": "StratSync Demo Plugin",
+  "permissions": ["windows", "tabs"],
   "action": {
-  "default_popup": "index.html",
-  "default_title": "Open Demo StratSync"
-},
+    "default_popup": "index.html",
+    "default_title": "Open Demo StratSync"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
   "icons": {
     "48": "logo.jpeg"
   }
