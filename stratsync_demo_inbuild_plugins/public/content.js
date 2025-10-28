@@ -1,4 +1,4 @@
-// Robust button injector for YouTube (handles SPA navigation)
+
 (() => {
   const BTN_ID = "stratsync-floating-btn";
 
@@ -42,19 +42,17 @@
     return btn;
   }
 
-  // Ensure button exists now
+  
   function ensureButton() {
     try {
       createButton();
     } catch (err) {
-      // defensive: if DOM isn't ready yet
-      // we'll retry from mutation observer
-      // eslint-disable-next-line no-console
+    
       console.warn("StratSync: ensureButton failed", err);
     }
   }
 
-  // Detect SPA navigation: patch history methods and listen to popstate
+
   function hookHistoryEvents() {
     const push = history.pushState;
     const replace = history.replaceState;
@@ -70,12 +68,12 @@
     };
     window.addEventListener("popstate", () => window.dispatchEvent(new Event("locationchange")));
     window.addEventListener("locationchange", () => {
-      // small timeout to allow YouTube to update DOM
+     
       setTimeout(ensureButton, 250);
     });
   }
 
-  // MutationObserver as a fallback when the page mutates
+  
   function observeDOM() {
     const observer = new MutationObserver(() => ensureButton());
     observer.observe(document.documentElement || document, { childList: true, subtree: true });
