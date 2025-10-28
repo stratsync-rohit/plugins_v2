@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 
-const TARGET_URL = "https://stratsync.ai";
+const TARGET_URL = "https://demo.stratsync.ai";
 const LOAD_TIMEOUT_MS = 5000;
 export default function App() {
   const [loading, setLoading] = useState(true);
