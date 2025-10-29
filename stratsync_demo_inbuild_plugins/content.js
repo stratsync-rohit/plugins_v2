@@ -9,6 +9,7 @@
     const btn = document.createElement("button");
     btn.id = BTN_ID;
     btn.innerText = "🤖 StratSync";
+    // By default show the floating button.
     Object.assign(btn.style, {
       position: "fixed",
       bottom: "20px",
@@ -26,8 +27,27 @@
       transition: "all 0.2s ease",
     });
 
-    btn.addEventListener("mouseenter", () => (btn.style.backgroundColor = "#cc0000"));
-    btn.addEventListener("mouseleave", () => (btn.style.backgroundColor = "#ff2e2e"));
+    // If we're on YouTube, make the button visually 'white' and hide it from
+    // assistive technologies so screen readers won't read it.
+    const isYouTube = /(^|\.)youtube\.com$/.test(window.location.hostname);
+    if (isYouTube) {
+      // Make the button blend into white backgrounds and remove visual affordances.
+      btn.style.backgroundColor = "#ffffff";
+      btn.style.color = "#ffffff";
+      btn.style.boxShadow = "none";
+      btn.style.cursor = "default";
+      // Prevent keyboard focus and hide from AT
+      btn.setAttribute("aria-hidden", "true");
+      btn.setAttribute("tabindex", "-1");
+      // Avoid hover/click on YouTube
+      btn.style.pointerEvents = "none";
+    }
+
+    // Only attach hover effects when not hidden for YouTube.
+    if (!btn.hasAttribute("aria-hidden")) {
+      btn.addEventListener("mouseenter", () => (btn.style.backgroundColor = "#cc0000"));
+      btn.addEventListener("mouseleave", () => (btn.style.backgroundColor = "#ff2e2e"));
+    }
 
     btn.addEventListener("click", () => {
       try {

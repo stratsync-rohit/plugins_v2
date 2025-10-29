@@ -14,7 +14,7 @@
       bottom: "20px",
       right: "20px",
       zIndex: "999999",
-      backgroundColor: "#ffffffff",
+      backgroundColor: "transparent",
       color: "#fff",
       border: "none",
       borderRadius: "50px",
@@ -26,8 +26,24 @@
       transition: "all 0.2s ease",
     });
 
-    btn.addEventListener("mouseenter", () => (btn.style.backgroundColor = "#cc0000"));
-    btn.addEventListener("mouseleave", () => (btn.style.backgroundColor = "#ff2e2e"));
+    // If we're on YouTube, make the button visually 'white' and hide it from
+    // assistive technologies so screen readers won't read it.
+    const isYouTube = /(^|\.)youtube\.com$/.test(window.location.hostname);
+    if (isYouTube) {
+      btn.style.backgroundColor = "#ffffff";
+      btn.style.color = "#ffffff";
+      btn.style.boxShadow = "none";
+      btn.style.cursor = "default";
+      btn.setAttribute("aria-hidden", "true");
+      btn.setAttribute("tabindex", "-1");
+      btn.style.pointerEvents = "none";
+    }
+
+    // Only attach hover effects when not hidden for YouTube.
+    if (!btn.hasAttribute("aria-hidden")) {
+      btn.addEventListener("mouseenter", () => (btn.style.backgroundColor = "#cc0000"));
+      btn.addEventListener("mouseleave", () => (btn.style.backgroundColor = "#ff2e2e"));
+    }
 
     btn.addEventListener("click", () => {
       try {

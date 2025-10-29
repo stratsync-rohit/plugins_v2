@@ -3,8 +3,8 @@ chrome.runtime.onMessage.addListener((msg) => {
     chrome.windows.create({
       url: chrome.runtime.getURL("dist/index.html"),
       type: "popup",
-      width: 500,
-      height: 600
+      width:1200,
+      height: 200
     });
   }
 });
