@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Rohit Choukiker",
+  "version": "3.0.0",
+  "description": "StratSync Demo Plugin V3",
+
+  "permissions": ["windows", "tabs", "scripting", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+
+  "background": {
+    "service_worker": "public/background.js"
+  },
+
+  "action": {
+    "default_title": "Open Demo StratSync V3"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["public/content.js"],
+      "run_at": "document_end"
+    }
+  ],
+
+  "icons": {
+    "48": "dist/vite.svg"
+  }
+}
