@@ -17,8 +17,9 @@ if (!document.getElementById('stratsync-bottom-button')) {
   button.style.cursor = 'pointer';
   button.style.zIndex = '9999';
   button.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
-  button.style.fontSize = '14px';
+  button.style.fontSize = '24px';
   button.style.fontWeight = 'bold';
+
 
  
   document.body.appendChild(button);
