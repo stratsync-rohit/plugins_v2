@@ -23,18 +23,20 @@ if (!document.getElementById('stratsync-button')) {
     boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
   });
 
-  // 🔹 Image element
-  const img = document.createElement('img');
-  img.src = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwdEEO-mCKk-1ZV-y9xarZawuakiH4VY381g&s';
-  img.alt = 'logo';
-  Object.assign(img.style, {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    borderRadius: '0%',
-  });
-  img.draggable = false;
+ const img = document.createElement('img');
 
+
+img.src = chrome.runtime.getURL('logo.jpeg'); 
+img.alt = 'logo';
+
+Object.assign(img.style, {
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+  borderRadius: '0%',
+});
+
+img.draggable = false;
 
   const tooltip = document.createElement('div');
   tooltip.textContent = 'StratSync Chatbot Demo';
