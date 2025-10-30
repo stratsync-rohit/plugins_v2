@@ -4,7 +4,13 @@
   "version": "2.0.0",
   "description": "StratSync Demo Plugin V3",
 
-  "permissions": ["windows", "tabs", "scripting"],
+  "permissions": [
+    "windows",
+    "tabs",
+    "scripting",
+    "activeTab"
+  ],
+
   "host_permissions": ["<all_urls>"],
 
   "background": {
@@ -13,7 +19,12 @@
 
   "action": {
     "default_popup": "index.html",
-    "default_title": "Open Demo StratSync V3"
+    "default_title": "Open Demo StratSync V3",
+    "default_icon": {
+      "16": "logo.jpeg",
+      "48": "logo.jpeg",
+      "128": "logo.jpeg"
+    }
   },
 
   "content_scripts": [
@@ -23,7 +34,16 @@
     }
   ],
 
+  "web_accessible_resources": [
+    {
+      "resources": ["logo.jpeg"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+
   "icons": {
-    "48": "logo.jpeg"
+    "16": "logo.jpeg",
+    "48": "logo.jpeg",
+    "128": "logo.jpeg"
   }
 }
