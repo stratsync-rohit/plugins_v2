@@ -6,7 +6,7 @@
   "permissions": ["storage", "identity", "tabs"],
   "host_permissions": ["https://*/*", "http://*/*"],
   "oauth2": {
-    "client_id": "860871613935-mm5pf73jofghp86ccr5qbikughpno8g1.apps.googleusercontent.com",
+    "client_id": "876513410741-gjgjl0j6dq5uggsecjd1vuu9bmb4rep6.apps.googleusercontent.com",
     "scopes": ["openid", "email", "profile"]
   },
   "background": {
