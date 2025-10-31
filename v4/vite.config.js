@@ -3,8 +3,6 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // Use a relative base so built asset links in `dist/index.html` work when
-  // `index.html` is opened as an extension popup (paths must be relative).
   base: './',
   plugins: [react()],
 })

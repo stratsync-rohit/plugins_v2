@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "StratSync Demo Plugin",
+  "version": "1.0",
+  "description": "An AI chatbot by StratSync powered by RAG for accurate, context-aware responses.",
+
+  "action": {
+    "default_popup": "dist/index.html"
+  },
+  "icons": {
+    "48": "dist/logo.jpeg"
+  }
+}
