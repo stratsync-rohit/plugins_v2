@@ -5,7 +5,7 @@ const TypingIndicator: React.FC = () => {
   return (
     <div className="flex justify-start items-start space-x-3">
        <img
-          src="/images/logo.jpeg"
+          src="images/logo.jpeg"
           alt="Stratsync Logo"
           className="h-10 w-auto"
         />
