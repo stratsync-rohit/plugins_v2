@@ -4,6 +4,16 @@
   "version": "1.0.0",
   "description": "Chatbot with Firebase Google Auth",
   "permissions": ["storage", "identity", "tabs"],
+
+  "oauth2": {
+    "client_id": "876513410741-agd6qc2kliptarjtm1gf4qeqvc0mk00k.apps.googleusercontent.com",
+    "scopes": [
+      "openid",
+      "email",
+      "profile",
+      "https://www.googleapis.com/auth/userinfo.email"
+    ]
+  },
   "host_permissions": ["https://*/*", "http://*/*"],
   "background": {
     "service_worker": "dist/background.js"

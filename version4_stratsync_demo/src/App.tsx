@@ -204,7 +204,7 @@ export default function App() {
                       alt="Google logo"
                       className="w-5 h-5"
                     />
-                    Login with Google
+                    Sign in with Google (Chrome Extension)
                   </>
                 )}
               </button>

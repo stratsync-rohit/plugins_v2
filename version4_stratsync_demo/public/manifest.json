@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "My Chatbot Extension",
   "version": "4.1.0",
-  "description": "Chatbot with Firebase Google Auth",
+  "description": "Chatbot with Firebase Google Auth main wala",
   "permissions": ["storage", "identity", "tabs"],
   "host_permissions": ["https://*/*", "http://*/*"],
   "oauth2": {
