@@ -8,10 +8,10 @@ const Header: React.FC = () => {
      
       <div>
         <img
-          src="/images/header_logo.jpeg"
-          alt="Stratsync Logo"
-          className="h-10 w-auto mr-2"
-        />
+              src="images/header_logo.jpeg"
+              alt="StratSyfnc Logo"
+              className="h-10 w-auto mx-auto "
+            />
       </div>
     </div>
   </div>
