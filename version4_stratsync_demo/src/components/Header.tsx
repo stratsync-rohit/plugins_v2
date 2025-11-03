@@ -8,7 +8,7 @@ const Header: React.FC = () => {
      
       <div>
         <img
-          src="images/header_logo.jpeg"
+          src="/images/logo.jpeg"
           alt="Stratsync Logo"
           className="h-10 w-auto mr-2"
         />

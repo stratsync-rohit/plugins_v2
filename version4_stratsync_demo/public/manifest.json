@@ -2,11 +2,10 @@
   "manifest_version": 3,
   "name": "My Chatbot Extension",
   "version": "1.0.0",
-  "description": "Chatbot with Firebase Google Auth",
+  "description": "Chatbot with Google Sign-in (chrome.identity)",
   "permissions": ["storage", "identity", "tabs"],
-
   "oauth2": {
-    "client_id": "876513410741-agd6qc2kliptarjtm1gf4qeqvc0mk00k.apps.googleusercontent.com",
+    "client_id": "788327203829-mguoqoca58t8t4pldqlrr303uc23vsp9.apps.googleusercontent.com",
     "scopes": [
       "openid",
       "email",
@@ -14,7 +13,10 @@
       "https://www.googleapis.com/auth/userinfo.email"
     ]
   },
-  "host_permissions": ["https://*/*", "http://*/*"],
+  "host_permissions": [
+    "https://accounts.google.com/*",
+    "https://www.googleapis.com/*"
+  ],
   "background": {
     "service_worker": "dist/background.js"
   },

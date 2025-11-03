@@ -1,143 +1,201 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ChatWindow from "./components/ChatWindow";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { auth } from "./firebase";
-import {
-  GoogleAuthProvider,
-  signInWithCredential,
-  onAuthStateChanged,
-} from "firebase/auth";
+
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [isSigningIn, setIsSigningIn] = useState(false);
   const [showLogin, setShowLogin] = useState(true);
   const [showUnauthorized, setShowUnauthorized] = useState(false);
-  const [isSigningIn, setIsSigningIn] = useState(false);
-  const signingTimeoutRef = useRef<number | null>(null);
+  const [showWelcomeOverlay, setShowWelcomeOverlay] = useState(false);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log("onAuthStateChanged fired", { user });
-      if (user) {
-        const email = user.email?.trim().toLowerCase();
+  const isChromeIdentityAvailable = () =>
+    typeof window !== "undefined" && !!(window.chrome && chrome.identity);
 
-        if (email && email.endsWith("@stratsync.ai")) {
-          setIsLoggedIn(true);
-          setShowLogin(false);
-          setShowUnauthorized(false);
-          // sign-in completed in another window — clear signing state
-          setIsSigningIn(false);
-        } else {
-          toast.error("Unauthorized email address", { autoClose: 1000 });
-          auth.signOut();
-          setIsLoggedIn(false);
-          setShowUnauthorized(true);
-          setShowLogin(true);
-          setIsSigningIn(false);
-        }
-      } else {
+  const updateUI = useCallback(
+    async (showOverlay = false) => {
+      if (!isChromeIdentityAvailable()) {
+        console.warn("chrome.identity is not available in this environment.");
         setIsLoggedIn(false);
+        setUser(null);
         setShowLogin(true);
-        setShowUnauthorized(false);
-        setIsSigningIn(false);
+        return;
       }
-    });
-    return () => unsubscribe();
-  }, []);
 
-  
-  // Removed fallback URL-based sign-in to avoid opening a new tab and keep user in popup
-  useEffect(() => {}, []);
+      try {
+        chrome.identity.getAuthToken({ interactive: false }, async (token) => {
+          console.log("Retrieved token (silent):", token);
 
-  const handleGoogleLogin = async () => {
-    console.log("handleGoogleLogin clicked");
-    // mark signing in and add a fallback timeout in case the popup is closed
-    setIsSigningIn(true);
-    if (signingTimeoutRef.current) {
-      window.clearTimeout(signingTimeoutRef.current);
-    }
-    signingTimeoutRef.current = window.setTimeout(() => {
-      console.warn("Signing in timed out, resetting state");
-      setIsSigningIn(false);
-      signingTimeoutRef.current = null;
-    }, 30000);
-    // Primary: background OAuth via chrome.identity.launchWebAuthFlow
-    try {
-      const chromeRuntime = (window as any).chrome?.runtime;
-      if (chromeRuntime?.sendMessage) {
-        chromeRuntime.sendMessage({ type: "login" }, async (resp: any) => {
-          if ((window as any).chrome?.runtime?.lastError) {
-            const msg = (window as any).chrome.runtime.lastError.message || "Unknown runtime error";
-            console.error("Background login runtime error:", msg);
-            toast.error(`Google login failed: ${msg}`, { autoClose: 3000 });
-            setIsSigningIn(false);
-            return;
-          }
-          if (!resp) {
-            console.warn("No response from background login");
-            toast.error("Google login failed: No response from background", { autoClose: 3000 });
-            setIsSigningIn(false);
-            return;
-          }
-          if (resp.error) {
-            console.warn("Background login error:", resp.error);
-            toast.error(`Google login failed: ${String(resp.error)}`, { autoClose: 3000 });
-            setIsSigningIn(false);
+          if (chrome.runtime.lastError || !token) {
+            setIsLoggedIn(false);
+            setUser(null);
+            setShowLogin(true);
             return;
           }
 
-          const idToken = resp.idToken ?? null;
-          const accessToken = resp.accessToken ?? null;
-          if (idToken || accessToken) {
-            try {
-              // Prefer using only accessToken to avoid id_token audience mismatch issues
-              const credential = accessToken
-                ? GoogleAuthProvider.credential(undefined, accessToken)
-                : GoogleAuthProvider.credential(idToken || undefined, undefined);
-              await signInWithCredential(auth, credential);
-              toast.success("Google login successful!", { autoClose: 1000 });
-            } catch (e) {
-              console.error("signInWithCredential failed:", e);
-              const msg = (e as any)?.message || (e as Error)?.toString?.() || "Unknown error";
-              toast.error(`Google login failed: ${msg}`, { autoClose: 3000 });
-            } finally {
-              setIsSigningIn(false);
+          try {
+            const res = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+              headers: { Authorization: "Bearer " + token },
+            });
+
+            if (res.ok) {
+              const data = await res.json();
+              setUser(data);
+              setIsLoggedIn(true);
+              setShowLogin(false);
+              if (showOverlay) {
+                setShowWelcomeOverlay(true);
+                setTimeout(() => setShowWelcomeOverlay(false), 3000);
+              }
+            } else {
+              console.error("Failed to fetch userinfo:", res.status, await res.text());
+              setIsLoggedIn(false);
+              setUser(null);
+              setShowLogin(true);
             }
-          } else {
-            toast.error("Google login failed: Missing tokens in response", { autoClose: 3000 });
-            setIsSigningIn(false);
+          } catch (err) {
+            console.error("Network error fetching userinfo:", err);
+            setIsLoggedIn(false);
+            setUser(null);
+            setShowLogin(true);
           }
         });
-      } else {
-        toast.error("Google login failed: Chrome runtime unavailable", { autoClose: 3000 });
-        setIsSigningIn(false);
+      } catch (err) {
+        console.error("updateUI error:", err);
+        setIsLoggedIn(false);
+        setUser(null);
+        setShowLogin(true);
       }
-    } catch (e) {
-      console.warn("Background auth failed:", e);
-      toast.error(`Google login failed: ${(e as Error)?.message || e}`, { autoClose: 3000 });
-      setIsSigningIn(false);
+    },
+    []
+  );
+
+  const handleGoogleLogin = () => {
+    console.log("Initiating Google login...");
+    if (!isChromeIdentityAvailable()) {
+      toast.error("Sign-in not available: chrome.identity not detected.");
+      return;
     }
+
+    setIsSigningIn(true);
+    chrome.identity.getAuthToken({ interactive: true }, (token) => {
+      const err = chrome.runtime && chrome.runtime.lastError;
+      const errMsg = err && err.message ? String(err.message).toLowerCase() : "";
+
+      const isUserCancel =
+        errMsg.includes("user") &&
+         (errMsg.includes("cancel") ||
+          errMsg.includes("did not approve") ||
+          errMsg.includes("denied") ||
+          errMsg.includes("did not authorize"));
+
+      if (err || !token) {
+        console.error("Login failed:", err || "no token received");
+
+        if (!isUserCancel) {
+          toast.error(err ? `Login failed: ${err.message}` : "Login failed: No token received");
+        } else {
+          console.info("Login cancelled by user.");
+        }
+
+        setIsSigningIn(false);
+        return;
+      }
+
+      // Success: update UI and show overlay
+      updateUI(true);
+      setIsSigningIn(false);
+      toast.success("Signed in successfully!");
+    });
   };
 
-  // cleanup any pending timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (signingTimeoutRef.current) {
-        window.clearTimeout(signingTimeoutRef.current);
-        signingTimeoutRef.current = null;
+  const handleSignOut = useCallback(() => {
+    if (!isChromeIdentityAvailable()) {
+      // If chrome.identity not present, just clear UI state
+      setIsLoggedIn(false);
+      setUser(null);
+      setShowLogin(true);
+      toast.info("Signed out (local).");
+      return;
+    }
+
+    chrome.identity.getAuthToken({ interactive: false }, (token) => {
+      if (token) {
+        const t = String(token);
+        // revoke token on Google side
+        fetch("https://accounts.google.com/o/oauth2/revoke?token=" + t)
+          .then(() => {
+            chrome.identity.removeCachedAuthToken({ token: t }, () => {
+              setIsLoggedIn(false);
+              setUser(null);
+              setShowLogin(true);
+              toast.info("Signed out successfully");
+            });
+          })
+          .catch((err) => {
+            console.warn("Revoke failed, still removing cached token:", err);
+            chrome.identity.removeCachedAuthToken({ token: t }, () => {
+              setIsLoggedIn(false);
+              setUser(null);
+              setShowLogin(true);
+              toast.info("Signed out (partial).");
+            });
+          });
+      } else {
+        setIsLoggedIn(false);
+        setUser(null);
+        setShowLogin(true);
+        toast.info("Signed out");
       }
-    };
+    });
   }, []);
 
-  // Removed openTabForPopupSignin to avoid navigating away from the popup
+  useEffect(() => {
+    // initial check
+    updateUI();
+
+    // listen for messages (e.g., background script sending 'logout')
+    function messageHandler(
+      message: any,
+      _sender: chrome.runtime.MessageSender,
+      sendResponse?: (response?: any) => void
+    ): boolean | void {
+      if (message === "logout") {
+        handleSignOut();
+        // sendResponse may expect something; respond if possible
+        try {
+          sendResponse && sendResponse({ ok: true });
+        } catch (e) {
+          // ignore sync sendResponse errors
+        }
+        return true; // indicates async response maybe (safe)
+      }
+      return false;
+    }
+
+    if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.onMessage) {
+      chrome.runtime.onMessage.addListener(messageHandler);
+    }
+
+    return () => {
+      if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.onMessage) {
+        try {
+          chrome.runtime.onMessage.removeListener(messageHandler);
+        } catch (e) {
+          // ignore if removal fails
+        }
+      }
+    };
+  }, [updateUI, handleSignOut]);
 
   return (
     <div className="relative w-full h-full overflow-hidden">
       <ToastContainer />
-
       <div
         className={`transition-all duration-300 ${
           showLogin || showUnauthorized ? "blur-sm pointer-events-none" : ""
@@ -150,6 +208,7 @@ export default function App() {
         <div className="absolute inset-0 bg-black bg-opacity-40 z-10"></div>
       )}
 
+      {/* Login Screen */}
       <AnimatePresence>
         {showLogin && !isLoggedIn && (
           <motion.div
@@ -170,7 +229,9 @@ export default function App() {
                 onClick={handleGoogleLogin}
                 disabled={isSigningIn}
                 className={`flex items-center justify-center gap-3 w-full bg-white border border-gray-300 text-gray-700 p-3 rounded-lg transition font-medium shadow-sm ${
-                  isSigningIn ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-100"
+                  isSigningIn
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-gray-100"
                 }`}
               >
                 {isSigningIn ? (
@@ -204,7 +265,7 @@ export default function App() {
                       alt="Google logo"
                       className="w-5 h-5"
                     />
-                    Sign in with Google (Chrome Extension)
+                    Login with Google
                   </>
                 )}
               </button>
@@ -213,6 +274,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
+      {/* Unauthorized Screen */}
       <AnimatePresence>
         {showUnauthorized && !isLoggedIn && (
           <motion.div
@@ -241,6 +303,48 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Welcome Overlay */}
+      <AnimatePresence>
+        {showWelcomeOverlay && user && (
+          <motion.div
+            className="absolute inset-0 flex flex-col items-center justify-center bg-white bg-opacity-90 z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <img
+              src={user.picture}
+              alt="Avatar"
+              className="w-20 h-20 rounded-full mb-4"
+            />
+            <p className="text-xl font-semibold">
+              Welcome, {user.given_name || user.name || "there"}!
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Profile Card */}
+      {isLoggedIn && user && (
+        <div className="absolute top-4 right-4 bg-white p-4 rounded-xl shadow-md flex items-center gap-3">
+          <img
+            src={user.picture}
+            alt="User"
+            className="w-10 h-10 rounded-full"
+          />
+          <div>
+            <p className="font-semibold text-gray-800">{user.name}</p>
+            <p className="text-gray-500 text-sm">{user.email}</p>
+          </div>
+          <button
+            onClick={handleSignOut}
+            className="ml-4 bg-gray-100 px-3 py-1 rounded-lg hover:bg-gray-200 transition text-sm"
+          >
+            Sign out
+          </button>
+        </div>
+      )}
     </div>
   );
 }
