@@ -3,6 +3,7 @@
   "name": "StratSync - AI Co-Pilot",
   "version": "1.2.2",
   "description": "Your AI co-pilot for customer success and business growth.",
+  
   "permissions": ["storage", "identity", "tabs"],
   "oauth2": {
     "client_id": "788327203829-mguoqoca58t8t4pldqlrr303uc23vsp9.apps.googleusercontent.com",
