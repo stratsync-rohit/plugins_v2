@@ -45,10 +45,39 @@ export default function App() {
 
             if (res.ok) {
               const data = await res.json();
-              setUser(data);
-              setIsLoggedIn(true);
-              setShowLogin(false);
-              
+
+           
+              const email: string | undefined = data && data.email ? String(data.email).toLowerCase() : undefined;
+              const allowed = !!email && email.endsWith("@stratsync.ai");
+
+              if (allowed) {
+                setUser(data);
+                setIsLoggedIn(true);
+                setShowLogin(false);
+                setShowUnauthorized(false);
+              } else {
+                console.warn("Unauthorized email domain:", email);
+               
+                setIsLoggedIn(false);
+                setUser(null);
+                setShowLogin(false);
+                setShowUnauthorized(true);
+
+             
+                try {
+                  if (token) {
+                    // revoke on Google side
+                    fetch("https://accounts.google.com/o/oauth2/revoke?token=" + String(token)).catch(() => {});
+                    try {
+                      chrome.identity.removeCachedAuthToken({ token: String(token) }, () => {});
+                    } catch (e) {
+                    
+                    }
+                  }
+                } catch (e) {
+                  // ignore revoke errors
+                }
+              }
             } else {
               console.error("Failed to fetch userinfo:", res.status, await res.text());
               setIsLoggedIn(false);
@@ -302,7 +331,7 @@ export default function App() {
 
     
 
-      {/* Profile Card
+   
       {isLoggedIn && user && (
         <div className="absolute top-4 right-4 bg-gray-100 p-4 rounded-xl shadow-md flex items-center gap-3">
           <img
@@ -322,7 +351,7 @@ export default function App() {
             Sign out
           </button>
         </div>
-      )} */}
+      )}
     </div>
   );
 }

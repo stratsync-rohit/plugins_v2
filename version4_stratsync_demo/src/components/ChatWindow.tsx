@@ -102,8 +102,8 @@ const ChatWindow: React.FC = () => {
     return (
       <div className="flex flex-col h-screen max-w-full mx-auto bg-white shadow-lg overflow-hidden">
         <Header />
-        <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
-          <div className="text-center mb-12 max-w-3xl">
+        <div className="flex-1 flex flex-col items-center justify-center px-4 py-4">
+          <div className="text-center mb-12 mt-28 max-w-3xl">
             <img
               src="images/logo.jpeg"
               alt="StratSyfnc Logo"
@@ -116,7 +116,7 @@ const ChatWindow: React.FC = () => {
               Your AI co-pilot for customer success and growth. Ask me anything to get started!
             </p>
           </div>
-          <div className="w-full max-w-3xl">
+          <div className="w-full  max-w-3xl">
             <InputBar
               onSendMessage={handleSendMessage}
               isDisabled={isTyping}
