@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "My Chatbot Extension",
-  "version": "1.0.0",
-  "description": "Chatbot with Google Sign-in (chrome.identity)",
+  "name": "StratSync - AI Co-Pilot",
+  "version": "4.1.0",
+  "description": "This is a demo version of StratSync — your AI co-pilot for customer success and growth.",
   "permissions": ["storage", "identity", "tabs"],
   "oauth2": {
     "client_id": "788327203829-mguoqoca58t8t4pldqlrr303uc23vsp9.apps.googleusercontent.com",

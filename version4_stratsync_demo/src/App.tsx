@@ -304,36 +304,18 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Welcome Overlay */}
-      <AnimatePresence>
-        {showWelcomeOverlay && user && (
-          <motion.div
-            className="absolute inset-0 flex flex-col items-center justify-center bg-white bg-opacity-90 z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <img
-              src={user.picture}
-              alt="Avatar"
-              className="w-20 h-20 rounded-full mb-4"
-            />
-            <p className="text-xl font-semibold">
-              Welcome, {user.given_name || user.name || "there"}!
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+    
 
       {/* Profile Card */}
       {isLoggedIn && user && (
-        <div className="absolute top-4 right-4 bg-white p-4 rounded-xl shadow-md flex items-center gap-3">
+        <div className="absolute top-4 right-4 bg-gray-100 p-4 rounded-xl shadow-md flex items-center gap-3">
           <img
             src={user.picture}
             alt="User"
             className="w-10 h-10 rounded-full"
           />
           <div>
+         
             <p className="font-semibold text-gray-800">{user.name}</p>
             <p className="text-gray-500 text-sm">{user.email}</p>
           </div>
