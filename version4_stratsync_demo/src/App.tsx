@@ -12,7 +12,7 @@ export default function App() {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [showLogin, setShowLogin] = useState(true);
   const [showUnauthorized, setShowUnauthorized] = useState(false);
-  const [showWelcomeOverlay, setShowWelcomeOverlay] = useState(false);
+
 
   const isChromeIdentityAvailable = () =>
     typeof window !== "undefined" && !!(window.chrome && chrome.identity);
@@ -48,10 +48,7 @@ export default function App() {
               setUser(data);
               setIsLoggedIn(true);
               setShowLogin(false);
-              if (showOverlay) {
-                setShowWelcomeOverlay(true);
-                setTimeout(() => setShowWelcomeOverlay(false), 3000);
-              }
+              
             } else {
               console.error("Failed to fetch userinfo:", res.status, await res.text());
               setIsLoggedIn(false);
@@ -107,7 +104,6 @@ export default function App() {
         return;
       }
 
-      // Success: update UI and show overlay
       updateUI(true);
       setIsSigningIn(false);
       toast.success("Signed in successfully!");
@@ -167,13 +163,13 @@ export default function App() {
     ): boolean | void {
       if (message === "logout") {
         handleSignOut();
-        // sendResponse may expect something; respond if possible
+       
         try {
           sendResponse && sendResponse({ ok: true });
         } catch (e) {
-          // ignore sync sendResponse errors
+         
         }
-        return true; // indicates async response maybe (safe)
+        return true; 
       }
       return false;
     }
@@ -306,7 +302,7 @@ export default function App() {
 
     
 
-      {/* Profile Card */}
+      {/* Profile Card
       {isLoggedIn && user && (
         <div className="absolute top-4 right-4 bg-gray-100 p-4 rounded-xl shadow-md flex items-center gap-3">
           <img
@@ -326,7 +322,7 @@ export default function App() {
             Sign out
           </button>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

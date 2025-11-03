@@ -100,7 +100,7 @@ const ChatWindow: React.FC = () => {
 
   if (!hasUserMessages) {
     return (
-      <div className="flex flex-col h-full max-w-full mx-auto bg-white shadow-lg">
+      <div className="flex flex-col h-auto max-w-full mx-auto bg-white shadow-lg">
         <Header />
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
           <div className="text-center mb-12 max-w-3xl">
