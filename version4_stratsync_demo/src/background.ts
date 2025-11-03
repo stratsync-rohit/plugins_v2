@@ -11,8 +11,8 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 /**
- * Helper: wrap chrome.identity.getAuthToken in a Promise
- * @param {Object} options - {interactive: boolean}
+ * 
+ * @param {Object} options 
  * @returns {Promise<string>}
  */
 function getAuthTokenAsync(options = { interactive: false }) {
