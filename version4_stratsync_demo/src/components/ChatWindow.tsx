@@ -105,8 +105,8 @@ const ChatWindow: React.FC = () => {
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
           <div className="text-center mb-12 max-w-3xl">
             <img
-              src="images/logo.jpeg"
-              alt="StratSync Logo"
+              src="images/logo .jpeg"
+              alt="StratSyfnc Logo"
               className="h-16 w-auto mx-auto mb-4"
             />
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
