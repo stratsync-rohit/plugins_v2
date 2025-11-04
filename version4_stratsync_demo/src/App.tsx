@@ -4,15 +4,12 @@ import ChatWindow from "./components/ChatWindow";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
-
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [showLogin, setShowLogin] = useState(true);
   const [showUnauthorized, setShowUnauthorized] = useState(false);
-
 
   const isChromeIdentityAvailable = () =>
     typeof window !== "undefined" && !!(window.chrome && chrome.identity);
@@ -29,73 +26,91 @@ export default function App() {
 
       try {
         return await new Promise<boolean>((resolve) => {
-          chrome.identity.getAuthToken({ interactive: false }, async (token) => {
-          console.log("Retrieved token (silent):", token);
+          chrome.identity.getAuthToken(
+            { interactive: false },
+            async (token) => {
+              console.log("Retrieved token (silent):", token);
 
-            if (chrome.runtime.lastError || !token) {
-              setIsLoggedIn(false);
-              setUser(null);
-              setShowLogin(true);
-              resolve(false);
-              return;
-            }
-
-          try {
-            const res = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
-              headers: { Authorization: "Bearer " + token },
-            });
-
-            if (res.ok) {
-              const data = await res.json();
-
-              const email: string | undefined = data && data.email ? String(data.email).toLowerCase() : undefined;
-              const allowed = !!email && email.endsWith("@stratsync.ai");
-
-              if (allowed) {
-                setUser(data);
-                setIsLoggedIn(true);
-                setShowLogin(false);
-                setShowUnauthorized(false);
-                resolve(true);
-              } else {
-                console.warn("Unauthorized email domain:", email);
-
+              if (chrome.runtime.lastError || !token) {
                 setIsLoggedIn(false);
                 setUser(null);
-                setShowLogin(false);
-                setShowUnauthorized(true);
+                setShowLogin(true);
+                resolve(false);
+                return;
+              }
 
-                try {
-                  if (token) {
-                
-                    fetch("https://accounts.google.com/o/oauth2/revoke?token=" + String(token)).catch(() => {});
-                    try {
-                      chrome.identity.removeCachedAuthToken({ token: String(token) }, () => {});
-                    } catch (e) {
-                     console.error("Error removing cached auth token:");
-                    }
+              try {
+                const res = await fetch(
+                  "https://www.googleapis.com/oauth2/v2/userinfo",
+                  {
+                    headers: { Authorization: "Bearer " + token },
                   }
-                } catch (e) {
-                  console.error("Error during token cleanup:");
-                }
+                );
 
+                if (res.ok) {
+                  const data = await res.json();
+
+                  const email: string | undefined =
+                    data && data.email
+                      ? String(data.email).toLowerCase()
+                      : undefined;
+                  const allowed = !!email && email.endsWith("@stratsync.ai");
+
+                  if (allowed) {
+                    setUser(data);
+                    setIsLoggedIn(true);
+                    setShowLogin(false);
+                    setShowUnauthorized(false);
+                    resolve(true);
+                  } else {
+                    console.warn("Unauthorized email domain:", email);
+
+                    setIsLoggedIn(false);
+                    setUser(null);
+                    setShowLogin(false);
+                    setShowUnauthorized(true);
+
+                    try {
+                      if (token) {
+                        fetch(
+                          "https://accounts.google.com/o/oauth2/revoke?token=" +
+                            String(token)
+                        ).catch(() => {});
+                        try {
+                          chrome.identity.removeCachedAuthToken(
+                            { token: String(token) },
+                            () => {}
+                          );
+                        } catch (e) {
+                          console.error("Error removing cached auth token:");
+                        }
+                      }
+                    } catch (e) {
+                      console.error("Error during token cleanup:");
+                    }
+
+                    resolve(false);
+                  }
+                } else {
+                  console.error(
+                    "Failed to fetch userinfo:",
+                    res.status,
+                    await res.text()
+                  );
+                  setIsLoggedIn(false);
+                  setUser(null);
+                  setShowLogin(true);
+                  resolve(false);
+                }
+              } catch (err) {
+                console.error("Network error fetching userinfo:", err);
+                setIsLoggedIn(false);
+                setUser(null);
+                setShowLogin(true);
                 resolve(false);
               }
-            } else {
-              console.error("Failed to fetch userinfo:", res.status, await res.text());
-              setIsLoggedIn(false);
-              setUser(null);
-              setShowLogin(true);
-              resolve(false);
             }
-          } catch (err) {
-            console.error("Network error fetching userinfo:", err);
-            setIsLoggedIn(false);
-            setUser(null);
-            setShowLogin(true);
-            resolve(false);
-          }
-        });
+          );
         });
       } catch (err) {
         console.error("updateUI error:", err);
@@ -118,11 +133,12 @@ export default function App() {
     setIsSigningIn(true);
     chrome.identity.getAuthToken({ interactive: true }, async (token) => {
       const err = chrome.runtime && chrome.runtime.lastError;
-      const errMsg = err && err.message ? String(err.message).toLowerCase() : "";
+      const errMsg =
+        err && err.message ? String(err.message).toLowerCase() : "";
 
       const isUserCancel =
         errMsg.includes("user") &&
-         (errMsg.includes("cancel") ||
+        (errMsg.includes("cancel") ||
           errMsg.includes("did not approve") ||
           errMsg.includes("denied") ||
           errMsg.includes("did not authorize"));
@@ -131,7 +147,11 @@ export default function App() {
         console.error("Login failed:", err || "no token received");
 
         if (!isUserCancel) {
-          toast.error(err ? `Login failed: ${err.message}` : "Login failed: No token received");
+          toast.error(
+            err
+              ? `Login failed: ${err.message}`
+              : "Login failed: No token received"
+          );
         } else {
           console.info("Login cancelled by user.");
         }
@@ -144,7 +164,7 @@ export default function App() {
         const allowed = await updateUI(true);
         setIsSigningIn(false);
         if (allowed) {
-          toast.success("Signed in successfully!");
+          toast.success("Signed in successfully!", { autoClose: 2000 });
         } else {
           toast.error("Unauthorized Access!");
         }
@@ -157,7 +177,6 @@ export default function App() {
 
   const handleSignOut = useCallback(() => {
     if (!isChromeIdentityAvailable()) {
-     
       setIsLoggedIn(false);
       setUser(null);
       setShowLogin(true);
@@ -168,7 +187,7 @@ export default function App() {
     chrome.identity.getAuthToken({ interactive: false }, (token) => {
       if (token) {
         const t = String(token);
-       
+
         fetch("https://accounts.google.com/o/oauth2/revoke?token=" + t)
           .then(() => {
             chrome.identity.removeCachedAuthToken({ token: t }, () => {
@@ -197,10 +216,8 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    
     updateUI();
 
-  
     function messageHandler(
       message: any,
       _sender: chrome.runtime.MessageSender,
@@ -208,23 +225,29 @@ export default function App() {
     ): boolean | void {
       if (message === "logout") {
         handleSignOut();
-       
+
         try {
           sendResponse && sendResponse({ ok: true });
-        } catch (e) {
-         
-        }
-        return true; 
+        } catch (e) {}
+        return true;
       }
       return false;
     }
 
-    if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.onMessage) {
+    if (
+      typeof chrome !== "undefined" &&
+      chrome.runtime &&
+      chrome.runtime.onMessage
+    ) {
       chrome.runtime.onMessage.addListener(messageHandler);
     }
 
     return () => {
-      if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.onMessage) {
+      if (
+        typeof chrome !== "undefined" &&
+        chrome.runtime &&
+        chrome.runtime.onMessage
+      ) {
         try {
           chrome.runtime.onMessage.removeListener(messageHandler);
         } catch (e) {
@@ -236,7 +259,15 @@ export default function App() {
 
   return (
     <div className="relative w-full h-full overflow-hidden">
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+      />
       <div
         className={`transition-all duration-300 ${
           showLogin || showUnauthorized ? "blur-sm pointer-events-none" : ""
@@ -315,7 +346,6 @@ export default function App() {
         )}
       </AnimatePresence>
 
-
       <AnimatePresence>
         {showUnauthorized && !isLoggedIn && (
           <motion.div
@@ -345,9 +375,6 @@ export default function App() {
         )}
       </AnimatePresence>
 
-    
-
-   
       {isLoggedIn && user && (
         <div className="absolute top-4 right-4 bg-gray-100 p-4 rounded-xl shadow-md flex items-center gap-3">
           <img
@@ -356,7 +383,6 @@ export default function App() {
             className="w-10 h-10 rounded-full"
           />
           <div>
-         
             <p className="font-semibold text-gray-800">{user.name}</p>
             <p className="text-gray-500 text-sm">{user.email}</p>
           </div>
