@@ -18,25 +18,27 @@ export default function App() {
     typeof window !== "undefined" && !!(window.chrome && chrome.identity);
 
   const updateUI = useCallback(
-    async (showOverlay = false) => {
+    async (showOverlay = false): Promise<boolean> => {
       if (!isChromeIdentityAvailable()) {
         console.warn("chrome.identity is not available in this environment.");
         setIsLoggedIn(false);
         setUser(null);
         setShowLogin(true);
-        return;
+        return false;
       }
 
       try {
-        chrome.identity.getAuthToken({ interactive: false }, async (token) => {
+        return await new Promise<boolean>((resolve) => {
+          chrome.identity.getAuthToken({ interactive: false }, async (token) => {
           console.log("Retrieved token (silent):", token);
 
-          if (chrome.runtime.lastError || !token) {
-            setIsLoggedIn(false);
-            setUser(null);
-            setShowLogin(true);
-            return;
-          }
+            if (chrome.runtime.lastError || !token) {
+              setIsLoggedIn(false);
+              setUser(null);
+              setShowLogin(true);
+              resolve(false);
+              return;
+            }
 
           try {
             const res = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
@@ -46,7 +48,6 @@ export default function App() {
             if (res.ok) {
               const data = await res.json();
 
-           
               const email: string | undefined = data && data.email ? String(data.email).toLowerCase() : undefined;
               const allowed = !!email && email.endsWith("@stratsync.ai");
 
@@ -55,15 +56,15 @@ export default function App() {
                 setIsLoggedIn(true);
                 setShowLogin(false);
                 setShowUnauthorized(false);
+                resolve(true);
               } else {
                 console.warn("Unauthorized email domain:", email);
-               
+
                 setIsLoggedIn(false);
                 setUser(null);
                 setShowLogin(false);
                 setShowUnauthorized(true);
 
-             
                 try {
                   if (token) {
                     // revoke on Google side
@@ -71,31 +72,37 @@ export default function App() {
                     try {
                       chrome.identity.removeCachedAuthToken({ token: String(token) }, () => {});
                     } catch (e) {
-                    
+                      // ignore
                     }
                   }
                 } catch (e) {
                   // ignore revoke errors
                 }
+
+                resolve(false);
               }
             } else {
               console.error("Failed to fetch userinfo:", res.status, await res.text());
               setIsLoggedIn(false);
               setUser(null);
               setShowLogin(true);
+              resolve(false);
             }
           } catch (err) {
             console.error("Network error fetching userinfo:", err);
             setIsLoggedIn(false);
             setUser(null);
             setShowLogin(true);
+            resolve(false);
           }
+        });
         });
       } catch (err) {
         console.error("updateUI error:", err);
         setIsLoggedIn(false);
         setUser(null);
         setShowLogin(true);
+        return false;
       }
     },
     []
@@ -109,7 +116,7 @@ export default function App() {
     }
 
     setIsSigningIn(true);
-    chrome.identity.getAuthToken({ interactive: true }, (token) => {
+    chrome.identity.getAuthToken({ interactive: true }, async (token) => {
       const err = chrome.runtime && chrome.runtime.lastError;
       const errMsg = err && err.message ? String(err.message).toLowerCase() : "";
 
@@ -133,9 +140,18 @@ export default function App() {
         return;
       }
 
-      updateUI(true);
-      setIsSigningIn(false);
-      toast.success("Signed in successfully!");
+      try {
+        const allowed = await updateUI(true);
+        setIsSigningIn(false);
+        if (allowed) {
+          toast.success("Signed in successfully!");
+        } else {
+          toast.error("Unauthorized Access!");
+        }
+      } catch (e) {
+        setIsSigningIn(false);
+        toast.error("Login error");
+      }
     });
   };
 
