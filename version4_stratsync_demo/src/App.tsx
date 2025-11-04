@@ -67,16 +67,16 @@ export default function App() {
 
                 try {
                   if (token) {
-                    // revoke on Google side
+                
                     fetch("https://accounts.google.com/o/oauth2/revoke?token=" + String(token)).catch(() => {});
                     try {
                       chrome.identity.removeCachedAuthToken({ token: String(token) }, () => {});
                     } catch (e) {
-                      // ignore
+                     console.error("Error removing cached auth token:");
                     }
                   }
                 } catch (e) {
-                  // ignore revoke errors
+                  console.error("Error during token cleanup:");
                 }
 
                 resolve(false);
@@ -157,7 +157,7 @@ export default function App() {
 
   const handleSignOut = useCallback(() => {
     if (!isChromeIdentityAvailable()) {
-      // If chrome.identity not present, just clear UI state
+     
       setIsLoggedIn(false);
       setUser(null);
       setShowLogin(true);
@@ -168,7 +168,7 @@ export default function App() {
     chrome.identity.getAuthToken({ interactive: false }, (token) => {
       if (token) {
         const t = String(token);
-        // revoke token on Google side
+       
         fetch("https://accounts.google.com/o/oauth2/revoke?token=" + t)
           .then(() => {
             chrome.identity.removeCachedAuthToken({ token: t }, () => {
@@ -197,10 +197,10 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    // initial check
+    
     updateUI();
 
-    // listen for messages (e.g., background script sending 'logout')
+  
     function messageHandler(
       message: any,
       _sender: chrome.runtime.MessageSender,
@@ -228,7 +228,7 @@ export default function App() {
         try {
           chrome.runtime.onMessage.removeListener(messageHandler);
         } catch (e) {
-          // ignore if removal fails
+          console.error("Error removing listener");
         }
       }
     };
@@ -315,7 +315,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Unauthorized Screen */}
+
       <AnimatePresence>
         {showUnauthorized && !isLoggedIn && (
           <motion.div

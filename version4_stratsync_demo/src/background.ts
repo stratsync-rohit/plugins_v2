@@ -102,23 +102,23 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
           console.warn("Failed to fetch userinfo:", err);
         }
 
-        // Enforce allowed email domain on background side as well.
+     
         try {
           const email = user && user.email ? String(user.email).toLowerCase() : "";
           const allowed = !!email && email.endsWith("@stratsync.ai");
 
           if (!allowed) {
             console.warn("Background: unauthorized email domain:", email);
-            // Best-effort revoke and remove cached token to prevent continued access
+           
             try {
               await revokeTokenAtGoogle(String(token));
             } catch (e) {
-              // ignore
+              console.warn("Error revoking token at Google");
             }
             try {
               await removeCachedTokenAsync(String(token));
             } catch (e) {
-              // ignore
+              console.warn("Error removing cached token");
             }
 
             sendResponse({ error: "unauthorized", reason: "email domain not allowed" });
