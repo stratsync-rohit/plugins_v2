@@ -10,7 +10,7 @@ const Header: React.FC = () => {
         <img
               src="images/header_logo.jpeg"
               alt="StratSyfnc Logo"
-              className="h-10 w-auto mx-auto "
+              className="h-9 w-auto mx-auto "
             />
       </div>
     </div>

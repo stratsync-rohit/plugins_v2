@@ -375,7 +375,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {isLoggedIn && user && (
+      {/* {isLoggedIn && user && (
         <div className="absolute top-4 right-4 bg-gray-100 p-4 rounded-xl shadow-md flex items-center gap-3">
           <img
             src={user.picture}
@@ -393,7 +393,7 @@ export default function App() {
             Sign out
           </button>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
