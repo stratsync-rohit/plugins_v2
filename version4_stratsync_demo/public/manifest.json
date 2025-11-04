@@ -23,13 +23,13 @@
   "action": {
     "default_popup": "dist/index.html",
     "default_icon": {
-      "16": "public/icons/icon16.jpg",
+      "16": "public/icons/icon16.png",
       "48": "public/icons/icon48.png",
       "128": "public/icons/icon128.png"
     }
   },
   "icons": {
-    "16": "public/icons/icon16.jpg",
+    "16": "public/icons/icon16.png",
     "48": "public/icons/icon48.png",
     "128": "public/icons/icon128.png"
   },
